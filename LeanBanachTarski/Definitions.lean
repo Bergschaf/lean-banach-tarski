@@ -1,11 +1,6 @@
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-
+import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 noncomputable section
 def matrix_a   : Matrix (Fin 3) (Fin 3) Real := !![1, 0, 0; 0, 1/3, -2/3*Real.sqrt 2; 0, 2/3*Real.sqrt 2, 1/3]
@@ -99,3 +94,30 @@ def D := {w :unitBall_without_origin | ∀ p : G, fixpoint w p}
 
 def RotationAxis (p : GL (Fin 3) Real) : Set r_3 :=
   {w : r_3 | fixpoint w p}
+
+
+inductive Generator
+  | gl_a : Generator
+  | gl_b : Generator
+  deriving DecidableEq
+
+abbrev G_list := {w : List (Generator × Bool) // w = FreeGroup.reduce w}
+
+def S_A := {w : G_list | w.val.head? = some (Generator.gl_a, true)}
+def S_A' := {w : G_list | w.val.head? = some (Generator.gl_a, false)}
+def S_B := {w : G_list | w.val.head? = some (Generator.gl_b, true)}
+def S_B' := {w : G_list | w.val.head? = some (Generator.gl_b, false)}
+
+
+def item_to_matrix (i : Generator × Bool) : GL (Fin 3) Real :=
+  match i with
+  | (Generator.gl_a, true) => gl_a
+  | (Generator.gl_a, false) => gl_a'
+  | (Generator.gl_b, true) => gl_b
+  | (Generator.gl_b, false) => gl_b'
+
+
+def list_to_matrix (w : List (Generator × Bool)) : GL (Fin 3) Real :=
+  match w with
+  | [] => gl_one
+  | (head::rest) =>  list_to_matrix rest * item_to_matrix head
