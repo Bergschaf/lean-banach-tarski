@@ -163,11 +163,80 @@ We now have a decomposition that allows us to duplicate the sphere, excluding it
 
 \section{Fixed Points and the Center}
 
-\begin{definition}[Equidecomposable] \label{def:equidecomposable}
-Two sets $C$ and $D$ are called equidecomposable if $C$ can be partitioned into finitely many parts that can be reassembled into $D$ using rotations and translations.
+\begin{definition}[Equidecomposability] \label{def:equidecomposable}
+Two sets $C$ and $D$ are called equidecomposable if $C$ can be partitioned into finitely many pieces, which can be rearranged through rotations and translations to form $D$.
 \end{definition}
 
-\begin{lemma}[Equidecomposability of L' \ D and L'] \label{lem:equidecomposability}
-$L' \set
+\begin{lemma}[Equidecomposability of $L' \setminus D$ and $L'$] \label{lem:equidecomposability}
+$L' \setminus D$ and $L'$ are equidecomposable.
+\end{lemma}
+\begin{proof}\uses{def:equidecomposable,lemma:countable_rotation_axes}
+Since the points in $D$ lie on countably many axes, we can find a line $l$ through the origin that does not intersect $D$.
+Furthermore, there exists an angle $\theta$ such that a rotation by $\theta$ around $l$ does not map any point in $D$ onto another point in $D$.
+Define $E = D \cup \rho(D) \cup \rho^2(D) \cup \rho^3(D) \cup \dots$. It follows immediately that
+$L' = E \cup (L' \setminus E)$, which is equidecomposable with $\rho(E) \cup (L' \setminus E)$.
+From the definition of $E$, we obtain $\rho(E) = E \setminus D$, so that we get
+$\rho(E) \cup (L' \setminus E) = (E \setminus D) \cup (L' \setminus E) = L' \setminus D$.
+Thus, it follows that $L'$ is equidecomposable with $L' \setminus D$.
+\end{proof}
 
+Now that we know that $L' \setminus D$ is equidecomposable with $L'$, the fixed points of the rotations in $G$ are no longer an issue.
+Hence, we now focus on the center.
 
+\begin{lemma}[Pi and Square Root of 2 Have No Common Multiple] \label{lemma:ncm_pi_sqrt_2}
+$\nexists p,q\in \mathbb{Z}$ such that $\sqrt{2} \cdot \frac{p}{q} = \pi$
+
+\end{lemma}
+\begin{proof}
+Assume that there exist $p,q\in \mathbb{Z}$ such that $\sqrt{2} \cdot \frac{p}{q} = \pi$. By the definition of $\cos^{-1}$ on the interval $[0,2\pi)$, we have $\cos^{-1}(-1) = \pi$ and thus
+\[
+\cos^{-1}(-1) = \sqrt{2} \cdot \frac{p}{q}.
+\]
+This is equivalent to $-1 = \cos(\sqrt{2} \cdot \frac{p}{q})$. Using the Taylor series expansion of cosine, we would obtain:
+\[
+\sum_{n=0}^{\infty} \frac{(-1)^n}{(2n)!} (2 \cdot \frac{p^2}{q^2})^n = -1.
+\]
+This contradicts the properties of rational approximations, proving the claim.
+\end{proof}
+
+\begin{lemma}[Equidecomposability of a Circle] \label{lemma:equidecomposable_circle}
+A circle is equidecomposable with a circle minus a single point.
+\end{lemma}
+\begin{proof} \uses{def:equidecomposable,lemma:ncm_pi_sqrt_2}
+
+We consider the unit circle $S^1 = \{(x,y) : x^2 + y^2 = 1\}$ minus the point $(1,0)$. We use the unit circle to simplify notation, but the following argument can be applied to any circle.
+Define $A = \{(\cos n, \sin n) : n \in \mathbb{Z}\}$. Since $\pi$ is irrational, we have $(\cos n, \sin n) \neq (\cos m, \sin m)$ for all distinct $n, m \in \mathbb{Z}$.
+Thus, $A$ is countably infinite and does not contain $(1,0)$. Let $B = (S^1 \setminus \{(1,0)\}) \setminus A$.
+Now, rotate $A$ about the origin by one unit. Denote the rotated set by $A'$. This rotation maps $(\cos 1, \sin 1)$ to $(1,0)$,
+which is exactly the missing point. Since every point originally in $A$ is still present in $A'$, we obtain $A' = A \cup \{(1,0)\}$,
+and thus $S^1 \setminus \{(1,0)\} = A \cup B$ is equidecomposable with $A' \cup B = S^1$.
+\end{proof}
+
+\begin{lemma}[Equidecomposability of a Subset]
+\label{lemma:equidecomposable_subset}
+
+\end{lemma}
+\begin{proof}
+\uses{def:equidecomposable}
+
+\end{proof}
+
+\begin{theorem}[Equidecomposability of a Sphere] \label{theorem:equidecomposable_sphere}
+A sphere minus its center is equidecomposable with the complete sphere.
+\end{theorem}
+\begin{proof} \uses{lemma:equidecomposable_circle, lemma:equidecomposable_subset}
+Constructing a circle within the sphere that includes the center of the sphere, together with Lemma \ref{lemma:equidecomposable_circle},
+shows that the sphere minus its center is equidecomposable with the complete sphere.
+\end{proof}
+
+\section{The Final Proof}
+
+Having gathered all the necessary details, we can now establish the full paradox.
+\begin{theorem}[Banach-Tarski]\label{thm:BanachTarski}
+A sphere is equidecomposable with two copies of itself.
+\end{theorem}
+\begin{proof} \uses{lem:equidecomposability,theorem:equidecomposable_sphere,lemma:doubling_L_D}
+In the second subsection, we showed that the sphere minus its center and the points on the rotation axes is equidecomposable with two copies of itself.
+Using Lemma \ref{lem:equidecomposability}, it follows that the sphere minus its center is equidecomposable with two copies of itself.
+Finally, by Theorem \ref{theorem:equidecomposable_sphere}, the complete sphere is equidecomposable with two copies of itself.
+\end{proof}
