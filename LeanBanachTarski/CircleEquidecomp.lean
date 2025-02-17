@@ -47,12 +47,12 @@ with the circle by moving every point that is ℕ+ radians forward from in the d
 back by one radian.
 -/
 noncomputable def circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircle r) PointRotation where
-  toFun := fun θ ↦ if ∃ (n : ℕ+), θ = m + (n : ℝ) then θ - (1 : ℝ) else θ
-  invFun := fun θ ↦ if ∃ (n : ℕ), θ = m + (n : ℝ) then θ + (1 : ℝ) else θ
+  toFun θ := if ∃ (n : ℕ+), θ = m + (n : ℝ) then θ - (1 : ℝ) else θ
+  invFun θ := if ∃ (n : ℕ), θ = m + (n : ℝ) then θ + (1 : ℝ) else θ
   source := ⊤ \ {m}
   target := ⊤
   map_source' := by simp
-  map_target' := fun x h ↦ by
+  map_target' x h := by
     simp_rw [Set.top_eq_univ, Set.mem_diff, Set.mem_singleton_iff, Set.mem_univ, true_and]
     split_ifs with h₁
     · rw [h₁.choose_spec, add_assoc, add_right_eq_self,
@@ -70,7 +70,7 @@ noncomputable def circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircle r)
       have h₂ := h₁ 0
       simp_rw [CharP.cast_eq_zero, AddCircle_coe_zero, add_zero, ne_eq] at h₂
       exact h₂
-  left_inv' := fun x h ↦ by
+  left_inv' x h := by
     simp_all only
       [Set.top_eq_univ, Set.mem_diff, Set.mem_univ, Set.mem_singleton_iff, true_and, ne_eq]
     split
@@ -87,7 +87,7 @@ noncomputable def circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircle r)
         simp_all only [CharP.cast_eq_zero, AddCircle_coe_zero, add_zero, not_true_eq_false] )⟩
       rw [PNat.mk_coe] at this
       contradiction
-  right_inv' := fun x h ↦ by
+  right_inv' x h := by
     simp_all only [Set.top_eq_univ, Set.mem_univ]
     split_ifs with h₁ h₂ <;> try simp_all only [add_sub_cancel_right, not_exists, exists_const]
     have q := h₂ (⟨h₁.choose + 1, by simp_rw [add_pos_iff, Nat.lt_one_iff, or_true]⟩)
