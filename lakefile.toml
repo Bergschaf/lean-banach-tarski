@@ -1,0 +1,10 @@
+name = "lean-banach-tarski"
+version = "0.1.0"
+defaultTargets = ["lean-banach-tarski"]
+
+[[lean_lib]]
+name = "LeanBanachTarski"
+
+[[lean_exe]]
+name = "lean-banach-tarski"
+root = "Main"
