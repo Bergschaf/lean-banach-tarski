@@ -89,13 +89,13 @@ def rotate_n_times (n : ℕ) (p : GL (Fin 3) Real) (vec : r_3) : r_3 :=
 
 def translate (p : r_3) (vec : r_3) : r_3 := p + vec
 
-def L := {w : r_3 | Real.sqrt (Real.sqrt (w 0 ^ 2 + w 1 ^ 2)) + w 2 ^ 2 ≤ 1}
+def unitBall : Set (Fin 3 -> ℝ) := Euclidean.closedBall ![(0 : ℝ), (0 : ℝ), (0 : ℝ)] 1
 def origin : r_3 := ![0,0,0]
-def L' := L \ {origin}
+def unitBall_without_origin := unitBall \ {origin}
 
 def fixpoint (y: r_3) (p: GL (Fin 3) Real) := rotate p y = y
 
-def D := {w : L' | ∀ p : G, fixpoint w p}
+def D := {w :unitBall_without_origin | ∀ p : G, fixpoint w p}
 
 def RotationAxis (p : GL (Fin 3) Real) : Set r_3 :=
   {w : r_3 | fixpoint w p}
