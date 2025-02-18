@@ -1,13 +1,9 @@
-name = "lean-banach-tarski"
+name = "LeanBanachTarski"
 version = "0.1.0"
-defaultTargets = ["lean-banach-tarski"]
+defaultTargets = ["LeanBanachTarski"]
 
 [[lean_lib]]
 name = "LeanBanachTarski"
-
-[[lean_exe]]
-name = "lean-banach-tarski"
-root = "LeanBanachTarski.Basic"
 
 [[require]]
 name = "checkdecls"
