@@ -7,7 +7,7 @@ name = "LeanBanachTarski"
 
 [[lean_exe]]
 name = "lean-banach-tarski"
-root = "Main"
+root = "LeanBanachTarski.Basic"
 
 [[require]]
 name = "checkdecls"
