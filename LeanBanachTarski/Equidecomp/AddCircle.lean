@@ -45,7 +45,7 @@ We say that the deleted circle (a circle with one point missing) is equidecompos
 with the circle by moving every point that is ℕ+ radians forward from in the deleted circle
 back by one radian.
 -/
-noncomputable def circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircle r) AddCircleRotation where
+noncomputable def add_circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircle r) AddCircleRotation where
   toFun θ := if ∃ (n : ℕ+), θ = m + (n : ℝ) then θ - (1 : ℝ) else θ
   invFun θ := if ∃ (n : ℕ), θ = m + (n : ℝ) then θ + (1 : ℝ) else θ
   source := ⊤ \ {m}
