@@ -1,2 +1,2 @@
 import LeanBanachTarski.Definitions
-import LeanBanachTarski.CircleEquidecomp
+import LeanBanachTarski.Equidecomp.AddCircle
