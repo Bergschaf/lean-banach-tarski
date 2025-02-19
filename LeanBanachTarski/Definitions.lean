@@ -12,44 +12,31 @@ end noncomputable section
 
 
 theorem matrix_a_det_neq_zero : Matrix.det matrix_a ≠ 0 := by
-  rw [matrix_a]
-  rw [Matrix.det_fin_three]
-  simp
+  rw [matrix_a, Matrix.det_fin_three]
   norm_num
   ring_nf
-  simp
   norm_num
 
 theorem matrix_a'_det_neq_zero : Matrix.det matrix_a' ≠ 0 := by
-  rw [matrix_a']
-  rw [Matrix.det_fin_three]
-  simp
+  rw [matrix_a', Matrix.det_fin_three]
   norm_num
   ring_nf
-  simp
   norm_num
 
 theorem matrix_b_det_neq_zero : Matrix.det matrix_b ≠ 0 := by
-  rw [matrix_b]
-  rw [Matrix.det_fin_three]
-  simp
+  rw [matrix_b, Matrix.det_fin_three]
   norm_num
   ring_nf
-  simp
   norm_num
 
 theorem matrix_b'_det_neq_zero : Matrix.det matrix_b' ≠ 0 := by
-  rw [matrix_b']
-  rw [Matrix.det_fin_three]
-  simp
+  rw [matrix_b', Matrix.det_fin_three]
   norm_num
   ring_nf
-  simp
   norm_num
 
 theorem matrix_one_det_neq_zero : Matrix.det matrix_one ≠ 0 := by
-  rw [matrix_one]
-  rw [Matrix.det_fin_three]
+  rw [matrix_one, Matrix.det_fin_three]
   simp
 
 
@@ -75,7 +62,7 @@ def rotate (p : GL (Fin 3) Real) (vec : r_3) : r_3 :=
   (p : Matrix (Fin 3) (Fin 3) Real).vecMul vec
 
 def rotate_set (x : Set r_3) (p : GL (Fin 3) Real) : Set r_3 :=
-  {w : r_3  | ∃ v, v ∈ x ∧ rotate p v = w}
+  {w : r_3 | ∃ v, v ∈ x ∧ rotate p v = w}
 
 def rotate_n_times (n : ℕ) (p : GL (Fin 3) Real) (vec : r_3) : r_3 :=
   match n with
