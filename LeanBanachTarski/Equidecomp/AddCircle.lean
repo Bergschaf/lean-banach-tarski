@@ -6,27 +6,25 @@ import Mathlib.Tactic.SplitIfs
 import Mathlib.Topology.Instances.AddCircle
 
 /-!
-# The deleted circle is equidecomposable to the circle
+# The deleted `AddCircle` is equidecomposable to the `AddCircle`
 
 This file shows an application of equidecomposition,
-to the elementary example of a disc being equidecomposable with
-a circle with a countable amount of missing points.
+to the elementary example of a circle being equidecomposable with
+a circle with a missing point.
 
-We follow the proof from https://math.hmc.edu/funfacts/equidecomposability/.
-
-Instead of using the `Circle` structure, we use `Real.Angle` to simplify our proof.
+Instead of using the `Circle` structure, we use `AddCircle` to simplify our proof.
 -/
 
 /--
 The two potential actions that we can make in our additive circle equidecomposition:
 stay or move.
 -/
-inductive PointRotation where
+inductive AddCircleRotation where
   | stay
   | move
 deriving DecidableEq, Repr
 
-instance : Top (Finset PointRotation) := ⟨{.stay, .move}⟩
+instance : Top (Finset AddCircleRotation) := ⟨{.stay, .move}⟩
 
 open Real AddCircle
 
@@ -38,7 +36,8 @@ theorem AddCircle_coe_zero : ↑(0 : ℝ) = (0 : AddCircle r) :=
   rfl
 
 
-noncomputable instance : SMul PointRotation (AddCircle r) := ⟨fun x θ ↦ if x = PointRotation.move then θ + (-1 : ℝ) else θ⟩
+noncomputable instance : SMul AddCircleRotation (AddCircle r) :=
+  ⟨fun x θ ↦ if x = .move then θ + (-1 : ℝ) else θ⟩
 
 open Classical in
 /--
@@ -46,7 +45,7 @@ We say that the deleted circle (a circle with one point missing) is equidecompos
 with the circle by moving every point that is ℕ+ radians forward from in the deleted circle
 back by one radian.
 -/
-noncomputable def circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircle r) PointRotation where
+noncomputable def circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircle r) AddCircleRotation where
   toFun θ := if ∃ (n : ℕ+), θ = m + (n : ℝ) then θ - (1 : ℝ) else θ
   invFun θ := if ∃ (n : ℕ), θ = m + (n : ℝ) then θ + (1 : ℝ) else θ
   source := ⊤ \ {m}
