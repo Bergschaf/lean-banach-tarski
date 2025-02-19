@@ -5,7 +5,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "dcaa8e659c634109518ff35516c7410e6fe67191",
+   "rev": "d19a965eea3da6363f3fc9b4bc64a2050ffdf8e1",
    "name": "mathlib",
    "manifestFile": "lake-manifest.json",
    "inputRev": null,
@@ -141,5 +141,5 @@
    "inputRev": "main",
    "inherited": true,
    "configFile": "lakefile.lean"}],
- "name": "«lean-banach-tarski»",
+ "name": "LeanBanachTarski",
  "lakeDir": ".lake"}
