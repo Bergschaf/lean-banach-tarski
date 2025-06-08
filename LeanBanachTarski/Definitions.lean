@@ -19,24 +19,33 @@ end noncomputable section
 theorem matrix_a_det_neq_zero : Matrix.det matrix_a ≠ 0 := by
   rw [matrix_a, Matrix.det_fin_three]
   norm_num
+  simp only [one_div, Fin.isValue, Matrix.cons_val, Matrix.cons_val_one, neg_mul, sub_neg_eq_add,
+    zero_mul, mul_zero, sub_zero]
   ring_nf
   norm_num
+
 
 theorem matrix_a'_det_neq_zero : Matrix.det matrix_a' ≠ 0 := by
   rw [matrix_a', Matrix.det_fin_three]
   norm_num
+  simp only [one_div, Fin.isValue, Matrix.cons_val, Matrix.cons_val_one, mul_neg, sub_neg_eq_add,
+    zero_mul, mul_zero, sub_zero]
   ring_nf
   norm_num
 
 theorem matrix_b_det_neq_zero : Matrix.det matrix_b ≠ 0 := by
   rw [matrix_b, Matrix.det_fin_three]
   norm_num
+  simp only [one_div, Fin.isValue, Matrix.cons_val, Matrix.cons_val_one, mul_one, mul_zero,
+    sub_zero, neg_zero, add_zero, zero_mul]
   ring_nf
   norm_num
 
 theorem matrix_b'_det_neq_zero : Matrix.det matrix_b' ≠ 0 := by
   rw [matrix_b', Matrix.det_fin_three]
   norm_num
+  simp only [one_div, Fin.isValue, Matrix.cons_val, Matrix.cons_val_one, mul_one, mul_zero,
+    sub_zero, add_zero, zero_mul, neg_zero]
   ring_nf
   norm_num
 

@@ -3,7 +3,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Pi.Irrational
 import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.SplitIfs
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # The deleted `AddCircle` is equidecomposable to the `AddCircle`
@@ -54,7 +54,7 @@ noncomputable def add_circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircl
   map_target' x h := by
     simp_rw [Set.top_eq_univ, Set.mem_diff, Set.mem_singleton_iff, Set.mem_univ, true_and]
     split_ifs with h₁
-    · rw [h₁.choose_spec, add_assoc, add_right_eq_self,
+    · rw [h₁.choose_spec, add_assoc, add_eq_left,
           ← AddCircle.coe_add, AddCircle.coe_eq_zero_iff, ← Nat.cast_add_one]
       push_neg
       intro n
@@ -64,7 +64,7 @@ noncomputable def add_circle_equidecomp (m : AddCircle r) : Equidecomp (AddCircl
         exact NeZero.ne' (((h₁.choose + 1) : ℕ) : ℝ)
       · refine Irrational.ne_nat ?_ (h₁.choose + 1)
         rw [zsmul_eq_mul]
-        refine (.int_mul hr h₃)
+        refine (.intCast_mul hr h₃)
     · push_neg at h₁
       have h₂ := h₁ 0
       simp_rw [CharP.cast_eq_zero, AddCircle_coe_zero, add_zero, ne_eq] at h₂
