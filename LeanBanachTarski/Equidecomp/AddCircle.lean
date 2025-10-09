@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Group.Action.Equidecomp
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Pi.Irrational
+import Mathlib.Analysis.Real.Pi.Irrational
 import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Topology.Instances.AddCircle.Defs

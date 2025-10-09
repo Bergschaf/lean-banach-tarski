@@ -1,11 +1,6 @@
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 
+abbrev SO_3 := Matrix.specialOrthogonalGroup (Fin 3) ℝ
 
 noncomputable section
 def matrix_a   : Matrix (Fin 3) (Fin 3) Real := !![1, 0, 0; 0, 1/3, -2/3*Real.sqrt 2; 0, 2/3*Real.sqrt 2, 1/3]
@@ -63,35 +58,4 @@ def gl_one : GL (Fin 3) Real := Matrix.GeneralLinearGroup.mkOfDetNeZero matrix_o
 end noncomputable section
 
 
-def generator : Set (GL (Fin 3) Real) := {gl_a, gl_b}
-
-def G := Subgroup.closure generator
-
-
-abbrev r_3 := Fin 3 -> ℝ
-abbrev r_2 := Fin 2 -> ℝ
-def zero_one_zero : r_3 := ![0,1,0]
-
-def rotate (p : GL (Fin 3) Real) (vec : r_3) : r_3 :=
-  (p : Matrix (Fin 3) (Fin 3) Real).vecMul vec
-
-def rotate_set (x : Set r_3) (p : GL (Fin 3) Real) : Set r_3 :=
-  {w : r_3 | ∃ v, v ∈ x ∧ rotate p v = w}
-
-def rotate_n_times (n : ℕ) (p : GL (Fin 3) Real) (vec : r_3) : r_3 :=
-  match n with
-  | 0 => vec
-  | Nat.succ m => rotate_n_times m p (rotate p vec)
-
-def translate (p : r_3) (vec : r_3) : r_3 := p + vec
-
-def unitBall : Set (Fin 3 -> ℝ) := Euclidean.closedBall ![(0 : ℝ), (0 : ℝ), (0 : ℝ)] 1
-def origin : r_3 := ![0,0,0]
-def unitBall_without_origin := unitBall \ {origin}
-
-def fixpoint (y: r_3) (p: GL (Fin 3) Real) := rotate p y = y
-
-def D := {w :unitBall_without_origin | ∀ p : G, fixpoint w p}
-
-def RotationAxis (p : GL (Fin 3) Real) : Set r_3 :=
-  {w : r_3 | fixpoint w p}
+abbrev ℝ_3 := Fin 3 -> ℝ
