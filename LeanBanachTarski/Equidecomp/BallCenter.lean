@@ -2,10 +2,10 @@ import Mathlib.Algebra.Group.Action.Equidecomp
 import Mathlib.Analysis.Normed.Field.UnitBall
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Pi.Irrational
-import Mathlib.Data.Real.Irrational
+import Mathlib.Analysis.Real.Pi.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Tactic.SplitIfs
-import Mathlib.Topology.Instances.AddCircle
+import LeanBanachTarski.Equidecomp.AddCircle
 
 -- Note: we don't use an arbitrary point, as the proof mechanism we use to proof this
 -- has a special case for the center point: since this builds up to the
