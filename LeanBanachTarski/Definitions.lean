@@ -1,6 +1,8 @@
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.Algebra.Group.Subgroup.Lattice
 
 noncomputable section
 def matrix_a   : Matrix (Fin 3) (Fin 3) Real := !![1, 0, 0; 0, 1/3, -2/3*Real.sqrt 2; 0, 2/3*Real.sqrt 2, 1/3]
@@ -52,18 +54,107 @@ open MatrixGroups
 
 noncomputable section
 def sl_a : SL(3, ℝ) := ⟨matrix_a, matrix_a_det_eq_one⟩
-def sl_a' : SL(3, ℝ) := ⟨matrix_a', matrix_a'_det_eq_one⟩
+def sl_a' : SL(3, ℝ) := sl_a⁻¹  -- ⟨matrix_a', matrix_a'_det_eq_one⟩
 def sl_b : SL(3, ℝ) := ⟨matrix_b, matrix_b_det_eq_one⟩
-def sl_b' : SL(3, ℝ) := ⟨matrix_b', matrix_b'_det_eq_one⟩
-def sl_one : SL(3, ℝ) := ⟨matrix_one, matrix_one_det_eq_one⟩
+def sl_b' : SL(3, ℝ) := sl_b⁻¹ -- ⟨matrix_b', matrix_b'_det_eq_one⟩
 end noncomputable section
 
 
 -- TOOD mathlib?? closure von ... ist free Group.
-def F_2 : Subgroup SL(3, ℝ) := Subgroup.closure {sl_a, sl_b, sl_a', sl_b'}
+
+-- benutze closure_induction
+open scoped Classical
+@[simp, grind = ]
+def fin_generators : Finset SL(3, ℝ) := {sl_a, sl_b, sl_a⁻¹, sl_b⁻¹}
+
+def F_2 : Subgroup SL(3, ℝ) := Subgroup.closure {sl_a, sl_b}
+
+def fin_2_to_F_2 (w : Fin 2 × Bool) : fin_generators :=
+  match w with
+  | (1, true) => ⟨sl_a, by grind⟩
+  | (1, false) => ⟨sl_a⁻¹, by grind⟩
+  | (2, true) => ⟨sl_b, by grind⟩
+  | (2, false) => ⟨sl_b⁻¹, by grind⟩
+
+def F_2_to_fin_2 (g : fin_generators) : Fin 2 × Bool :=
+  if g = sl_a then (1, true) else
+  if g = sl_a⁻¹ then (1, false) else
+  if g = sl_b then (2, true) else (2, false)
+
+lemma f_2_representable : ∀ g ∈ F_2,
+    ∃ l : List fin_generators, (l : List SL(3, ℝ)).prod = g ∧ FreeGroup.reduce (l.map F_2_to_fin_2) = l.map F_2_to_fin_2 := by
+  apply Subgroup.closure_induction
+  . simp only [Set.mem_insert_iff, Set.mem_singleton_iff, List.pure_def, List.bind_eq_flatMap,
+    forall_eq_or_imp, forall_eq]
+    apply And.intro
+    . use [⟨sl_a, by simp⟩]
+      simp
+    . use [⟨sl_b, by simp⟩]
+      simp
+  . use [⟨sl_a, by simp⟩, ⟨sl_a⁻¹, by simp⟩]
+    simp
+  . simp only [List.pure_def, List.bind_eq_flatMap, forall_exists_index]
+    intro x y hx hy l1 h1 l2 h2
+    use l1 ++ l2
+    simp at h1 h2
+    simp [h1,h2]
+  . simp only [fin_generators, List.pure_def, List.bind_eq_flatMap, List.map_id_fun', id_eq,
+    forall_exists_index]
+    intro g hg l h1
+    rw [← h1]
+    rw [@List.prod_inv_reverse]
+    have h (x : fin_generators) :  (x.val)⁻¹ ∈ fin_generators:= by
+      have prop := x.prop
+      simp only [fin_generators, Finset.mem_insert, inv_eq_iff_eq_inv, inv_inv,
+        Finset.mem_singleton]
+      simp only [fin_generators] at prop
+      grind
+    let simple_inv (x : fin_generators) : fin_generators := ⟨x.val⁻¹,h x⟩
+    use (l.map (fun a ↦ simple_inv a)).reverse
+    simp [simple_inv, List.flatMap_reverse, List.flatMap_map, List.map_flatMap]
+
+
+open FreeGroup
+def equiv : ↥F_2 ≃* FreeGroup (Fin 2) where
+  toFun g :=  mk <|(f_2_representable g.val g.prop).choose.map F_2_to_fin_2
+  invFun x := ⟨(((x.toWord.map fin_2_to_F_2)).map (fun x ↦ x.val)).prod, by
+      simp [F_2]
+      apply Subgroup.list_prod_mem
+      simp [fin_2_to_F_2]
+      intro g h1
+      cases h1 with
+      | inl h =>
+        cases h with
+        | inr h => exact Subgroup.mem_closure_of_mem (by grind)
+        | inl h =>
+          rw [← h.right]
+          apply Subgroup.inv_mem
+          exact Subgroup.mem_closure_of_mem (by grind)
+      | inr h => sorry -- gschenkt
+
+  ⟩
+  left_inv := by
+    simp only [Function.LeftInverse, fin_generators, List.pure_def, List.bind_eq_flatMap,
+      List.map_id_fun', id_eq, toWord_mk, List.map_map, Subtype.forall, Subtype.mk.injEq]
+    intro a b
+    simp [Function.comp_def]
+
+
+  right_inv := by sorry
+  map_mul' x y := by
+    simp only [fin_generators, List.pure_def, List.bind_eq_flatMap, List.map_id_fun', id_eq,
+      Subgroup.coe_mul, mul_mk]
+    sorry
+
+
+
+def basis : FreeGroupBasis (Fin 2) ↥F_2 where
+  repr := equiv
 
 instance : IsFreeGroup F_2 where
   nonempty_basis := by
-    sorry
+    use (Fin 2)
+    refine Nonempty.intro basis
+
 
 abbrev ℝ_3 := Fin 3 -> ℝ
