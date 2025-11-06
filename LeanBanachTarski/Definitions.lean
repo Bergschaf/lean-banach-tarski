@@ -1,11 +1,7 @@
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Data.Matrix.Mul
-import Mathlib
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 noncomputable section
 def matrix_a   : Matrix (Fin 3) (Fin 3) Real := !![1, 0, 0; 0, 1/3, -2/3*Real.sqrt 2; 0, 2/3*Real.sqrt 2, 1/3]
 def matrix_b   : Matrix (Fin 3) (Fin 3) Real := !![1/3, -2/3*Real.sqrt 2, 0; (2/3*Real.sqrt 2), 1/3, 0; 0, 0, 1]
@@ -102,19 +98,78 @@ lemma Free_Rots_mul_vec (w : FreeGroup (Fin 2)):
 
   induction h : w.toWord.length generalizing w with
   | zero =>
-
     have h : w.toWord = [] := by exact List.eq_nil_iff_length_eq_zero.mpr h
-    simp [h]
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, h, lift_mk, List.map_nil, List.prod_nil,
+      OneMemClass.coe_one, SpecialLinearGroup.coe_one, one_mulVec, toWord_mk, reduce_nil,
+      List.length_nil, pow_zero, ne_eq, one_ne_zero, not_false_eq_true, div_self, one_smul,
+      vecCons_inj, zero_eq_mul, Int.cast_eq_zero, Nat.ofNat_nonneg, Real.sqrt_eq_zero,
+      OfNat.ofNat_ne_zero, or_false, and_true, exists_and_left, ↓existsAndEq, exists_eq_left]
     use 1
-    simp
+    simp only [Int.cast_one]
   | succ i hi =>
     match hw: w.toWord with
     | [] =>
-      simp[hw]
-      use 1
-      simp
-
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, lift_mk, List.map_nil, List.prod_nil,
+        OneMemClass.coe_one, SpecialLinearGroup.coe_one, one_mulVec, toWord_mk, reduce_nil,
+        List.length_nil, pow_zero, ne_eq, one_ne_zero, not_false_eq_true, div_self, one_smul,
+        vecCons_inj, zero_eq_mul, Int.cast_eq_zero, Nat.ofNat_nonneg, Real.sqrt_eq_zero,
+        OfNat.ofNat_ne_zero, or_false, and_true, exists_and_left, ↓existsAndEq, exists_eq_left]
+      grind
     | head :: tail =>
+      rw [show ((mk (head :: tail)).toWord.length) = i + 1 by rw [← hw, mk_toWord, h]]
+      rw [lift_mk, List.map_cons, List.prod_cons]
+      have he : ∃ w' : FreeGroup (Fin 2), w'.toWord = tail ∧ w'.toWord.length = i:= by
+        sorry
+      rcases he with ⟨w', he1, he2⟩
+      specialize hi w' he2
+      rcases hi with ⟨a, b, c, hi⟩
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, lift_mk, Subgroup.val_list_prod, List.map_map,
+        toWord_mk, reduce_toWord, one_div, smul_cons, smul_eq_mul, smul_empty] at hi
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Subgroup.coe_mul, Subgroup.val_list_prod,
+        List.map_map, SpecialLinearGroup.coe_mul, one_div, smul_cons, smul_eq_mul, smul_empty]
+      rw [← mulVec_mulVec]
+      rw [he1] at hi
+      rw [hi]
+      fin_cases head
+      . simp only [fin_2_to_rots, cond_true]
+        use a - 2 * b
+        use 4 * a + b
+        use 3 * c
+        ext j
+        simp only [sl_b, matrix_b, one_div, mulVec_cons, Nat.succ_eq_add_one, Nat.reduceAdd,
+          mulVec_empty, add_zero, Pi.add_apply, Pi.smul_apply, Function.comp_apply, smul_eq_mul,
+          Int.cast_sub, Int.cast_mul, Int.cast_ofNat, ← he1, he2]
+        fin_cases j <;> simp <;> grind
+      . simp only [fin_2_to_rots, cond_false, InvMemClass.coe_inv, SpecialLinearGroup.coe_inv]
+        use a + 2 * b
+        use -4 * a + b
+        use 3 * c
+        ext j
+        simp only [sl_b, matrix_b, one_div, adjugate_fin_three, Fin.isValue, of_apply, cons_val',
+          cons_val_one, cons_val_zero, cons_val_fin_one, cons_val, mul_one, mul_zero, sub_zero,
+          add_zero, zero_mul, sub_self, neg_zero, ← he1, he2, mulVec_cons, Nat.succ_eq_add_one,
+          Nat.reduceAdd, mulVec_empty, Pi.add_apply, Pi.smul_apply, Function.comp_apply,
+          smul_eq_mul, Int.cast_add, Int.cast_mul, Int.cast_ofNat, Int.reduceNeg, neg_mul,
+          Int.cast_neg]
+        fin_cases j <;> simp <;> grind
+      . simp only [fin_2_to_rots, cond_true]
+        use 3 * a
+        use b - 4 * c
+        use 2 * b + c
+        ext j
+        simp only [sl_a, matrix_a, one_div, ← he1, he2, mulVec_cons, Nat.succ_eq_add_one,
+          Nat.reduceAdd, mulVec_empty, add_zero, Pi.add_apply, Pi.smul_apply, Function.comp_apply,
+          smul_eq_mul, Int.cast_mul, Int.cast_ofNat, Int.cast_sub, Int.cast_add]
+        fin_cases j <;> simp <;> grind
+      . simp only [fin_2_to_rots, cond_false, InvMemClass.coe_inv, SpecialLinearGroup.coe_inv]
+        use 3 * a
+        use -4 * a + b
+        use - 2 * b + c
+        ext j
+        simp [adjugate_fin_three, sl_a, matrix_a, one_div, mulVec_cons, Nat.succ_eq_add_one, Nat.reduceAdd,
+          mulVec_empty, add_zero, Pi.add_apply, Pi.smul_apply, Function.comp_apply, smul_eq_mul,
+          Int.cast_sub, Int.cast_mul, Int.cast_ofNat, ← he1, he2]
+        fin_cases j <;> simp <;> grind
 
 
 
@@ -122,6 +177,16 @@ lemma Free_Rots_mul_vec (w : FreeGroup (Fin 2)):
 
 
 
+
+
+
+
+
+
+
+
+
+#min_imports
 
 #exit
   have h : IsReduced w.toWord := by exact isReduced_toWord
