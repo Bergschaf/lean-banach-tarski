@@ -33,6 +33,22 @@ def sl_a : SL(3, ℝ) := ⟨matrix_a, matrix_a_det_eq_one⟩
 def sl_b : SL(3, ℝ) := ⟨matrix_b, matrix_b_det_eq_one⟩
 end noncomputable section
 
+lemma sl_a_neq_one : sl_a ≠ 1 := by
+  simp [sl_a, matrix_a]
+  rw [Subtype.ext_iff]
+  simp [← Matrix.ext_iff]
+  use 1
+  use 1
+  simp
+
+lemma sl_b_neq_one : sl_b ≠ 1 := by
+  simp [sl_b, matrix_b]
+  rw [Subtype.ext_iff]
+  simp [← Matrix.ext_iff]
+  use 1
+  use 1
+  simp
+
 -- TOOD mathlib?? closure von ... ist free Group.
 
 -- benutze closure_induction
@@ -47,16 +63,60 @@ def fin_2_to_rots (w : Fin 2) : Free_Rots :=
   | 2 => ⟨sl_b, by apply Subgroup.mem_closure_of_mem; simp⟩
 
 def F_2_to_Rots := FreeGroup.lift fin_2_to_rots
+#check F_2_to_Rots
 open FreeGroup
 
+theorem linear (w1 w2 : FreeGroup (Fin 2)) : F_2_to_Rots (w1 * w2) = F_2_to_Rots w1 * F_2_to_Rots w2 := by
+  simp [F_2_to_Rots]
+
+theorem matrix_independent (i : FreeGroup (Fin 2)) :
+  (List.map (fun x => bif x.2 then fin_2_to_rots x.1 else (fin_2_to_rots x.1)⁻¹) i.toWord).prod = 1 ↔ ∀ x ∈ (List.map (fun x => bif x.2 then fin_2_to_rots x.1 else (fin_2_to_rots x.1)⁻¹) i.toWord), x = 1 := by
+apply Iff.intro
+intro h
+induction hl: (List.map (fun x => bif x.2 then fin_2_to_rots x.1 else (fin_2_to_rots x.1)⁻¹) i.toWord) with
+| nil => simp
+| cons head tail ih =>
+  simp_all only [List.prod_cons, List.cons_ne_self, not_isEmpty_of_nonempty, IsEmpty.forall_iff,
+    implies_true, List.mem_cons, forall_eq_or_imp, Subtype.forall, Subgroup.mk_eq_one]
+
+sorry
 theorem inj : Function.Injective F_2_to_Rots := by
-  simp [Function.Injective, F_2_to_Rots]
-  intro a1 a2 h
-  -- richtig, wichtiges resultat, wo beweis?
-  --refine FreeGroup.toWord_inj.mp ?_
-  rw [← @mk_toWord _ _ a1, ← @mk_toWord _ _ a2] at h
-  simp at h
-  sorry
+  rw [← MonoidHom.ker_eq_bot_iff]
+  ext i
+  simp [MonoidHom.ker, F_2_to_Rots]
+  apply Iff.intro
+  . intro h
+    rw [← @mk_toWord _ _ i] at h
+    simp only [lift_mk] at h
+    rw [matrix_independent] at h
+    contrapose h
+    rw [← toWord_eq_nil_iff] at h
+    rw [List.eq_nil_iff_forall_not_mem] at h
+    have h1 :
+        (1, true) ∈ i.toWord ∨ (1, false) ∈ i.toWord ∨ (2, true) ∈ i.toWord ∨ (2,false) ∈ i.toWord := by
+      simp at h
+      grind
+    simp only [List.mem_map, Prod.exists, Bool.exists_bool, cond_false, cond_true,
+      Fin.exists_fin_two, Fin.isValue, Subtype.forall, Subgroup.mk_eq_one, not_forall,
+      Classical.not_imp, exists_and_right]
+    have h3 : (2 : Fin 2) = 0 := by rfl
+    rcases h1 with h1 | h1 | h1 | h1
+    . use sl_a
+      simp [Free_Rots, h1, fin_2_to_rots, Subgroup.mem_closure_of_mem]
+      exact sl_a_neq_one
+    . use sl_a⁻¹
+      simp [Subtype.ext_iff, Free_Rots, h1, fin_2_to_rots, Subgroup.mem_closure_of_mem]
+      exact sl_a_neq_one
+    . use sl_b
+      rw [h3] at h1
+      simp [Subtype.ext_iff, Free_Rots, h1, fin_2_to_rots, Subgroup.mem_closure_of_mem]
+      exact sl_b_neq_one
+    . use sl_b⁻¹
+      rw [h3] at h1
+      simp [Subtype.ext_iff, Free_Rots, h1, fin_2_to_rots, Subgroup.mem_closure_of_mem]
+      exact sl_b_neq_one
+  . intro h
+    simp [h]
 
 
 #check F_2_to_Rots
