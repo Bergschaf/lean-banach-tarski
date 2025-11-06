@@ -3,7 +3,9 @@ import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.Algebra.Group.Subgroup.Lattice
-
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Data.Matrix.Mul
+import Mathlib
 noncomputable section
 def matrix_a   : Matrix (Fin 3) (Fin 3) Real := !![1, 0, 0; 0, 1/3, -2/3*Real.sqrt 2; 0, 2/3*Real.sqrt 2, 1/3]
 def matrix_b   : Matrix (Fin 3) (Fin 3) Real := !![1/3, -2/3*Real.sqrt 2, 0; (2/3*Real.sqrt 2), 1/3, 0; 0, 0, 1]
@@ -56,6 +58,9 @@ open scoped Classical
 --@[simp, grind = ]
 
 abbrev Free_Rots : Subgroup SL(3, ℝ) := Subgroup.closure {sl_a, sl_b}
+open Matrix
+
+
 
 def fin_2_to_rots (w : Fin 2) : Free_Rots :=
   match w with
@@ -71,21 +76,94 @@ theorem linear (w1 w2 : FreeGroup (Fin 2)) : F_2_to_Rots (w1 * w2) = F_2_to_Rots
 
 theorem matrix_independent (i : FreeGroup (Fin 2)) :
   (List.map (fun x => bif x.2 then fin_2_to_rots x.1 else (fin_2_to_rots x.1)⁻¹) i.toWord).prod = 1 ↔ ∀ x ∈ (List.map (fun x => bif x.2 then fin_2_to_rots x.1 else (fin_2_to_rots x.1)⁻¹) i.toWord), x = 1 := by
-apply Iff.intro
-intro h
-induction hl: (List.map (fun x => bif x.2 then fin_2_to_rots x.1 else (fin_2_to_rots x.1)⁻¹) i.toWord) with
-| nil => simp
-| cons head tail ih =>
-  simp_all only [List.prod_cons, List.cons_ne_self, not_isEmpty_of_nonempty, IsEmpty.forall_iff,
-    implies_true, List.mem_cons, forall_eq_or_imp, Subtype.forall, Subgroup.mk_eq_one]
+  apply Iff.intro
+  intro h w h1
 
-sorry
+  induction hl: (List.map (fun x => bif x.2 then fin_2_to_rots x.1 else (fin_2_to_rots x.1)⁻¹) i.toWord) with
+  | nil => grind
+  | cons head tail ih =>
+    simp_all
+    rw [← List.prod_cons, ← hl] at h
+    contrapose h
+    cases h1 with
+    | inl hC =>
+      simp_all
+      subst hC
+      rw [← List.prod_cons]
+      rw [← hl]
+      contrapose h
+      simp_all
+
+    | inr h => admit
+-- lemma 3.1
+lemma Free_Rots_mul_vec (w : FreeGroup (Fin 2)):
+    ∃a b c : ℤ , ((lift fin_2_to_rots) w) *ᵥ (![0,1,0]) = (1/3^ w.toWord.length : ℝ) • ![a * Real.sqrt 2, b,c *  Real.sqrt 2] := by
+  rw [← @mk_toWord _ _ w]
+
+  induction h : w.toWord.length generalizing w with
+  | zero =>
+
+    have h : w.toWord = [] := by exact List.eq_nil_iff_length_eq_zero.mpr h
+    simp [h]
+    use 1
+    simp
+  | succ i hi =>
+    match hw: w.toWord with
+    | [] =>
+      simp[hw]
+      use 1
+      simp
+
+    | head :: tail =>
+
+
+
+
+
+
+
+
+#exit
+  have h : IsReduced w.toWord := by exact isReduced_toWord
+  induction' w.toWord with head tail ih
+  . simp
+    use 1
+    simp
+  .
+
+    have h2 :(mk (head :: tail)).toWord.length = (mk (tail)).toWord.length + 1 := by
+      sorry -- todo
+    rw [h2]
+    rcases ih with ⟨a, b, c, ih⟩
+    simp at ih
+    simp [← @mulVec_mulVec]
+    rw [ih]
+    fin_cases head <;> simp [fin_2_to_rots]
+    . use a - 2 * b
+      use 4 * a + b
+      use 3 * c
+      ext i
+      fin_cases i <;> simp [sl_b, matrix_b] <;> ring_nf <;> grind
+    . sorry
+    . sorry
+    . sorry
+
+
 theorem inj : Function.Injective F_2_to_Rots := by
   rw [← MonoidHom.ker_eq_bot_iff]
   ext i
   simp [MonoidHom.ker, F_2_to_Rots]
   apply Iff.intro
   . intro h
+    -- test
+    apply_fun (fun (x : SL(3, ℝ)) ↦ (x : Matrix (Fin 3) (Fin 3) ℝ) *ᵥ (![0,1,0])) at h
+    obtain ⟨a, b, c, n, h1⟩ := Free_Rots_mul_vec i
+    rw [h1] at h
+
+
+    contrapose h
+
+  #exit
     rw [← @mk_toWord _ _ i] at h
     simp only [lift_mk] at h
     rw [matrix_independent] at h
