@@ -59,30 +59,87 @@ def sl_b : SL(3, ℝ) := ⟨matrix_b, matrix_b_det_eq_one⟩
 def sl_b' : SL(3, ℝ) := sl_b⁻¹ -- ⟨matrix_b', matrix_b'_det_eq_one⟩
 end noncomputable section
 
+@[simp]
+lemma sl_b_inv_neq : ¬ sl_b = sl_b⁻¹ := by
+  sorry
+
+@[simp]
+lemma sl_a_inv_neq : ¬ sl_a = sl_a⁻¹ := by
+  sorry
+
+@[simp]
+lemma sl_a_neq_sl_b : ¬ sl_a = sl_b := by
+  sorry
+
 
 -- TOOD mathlib?? closure von ... ist free Group.
 
 -- benutze closure_induction
 open scoped Classical
-@[simp, grind = ]
-def fin_generators : Finset SL(3, ℝ) := {sl_a, sl_b, sl_a⁻¹, sl_b⁻¹}
+--@[simp, grind = ]
+--def fin_generators : Finset SL(3, ℝ) := {sl_a, sl_b, sl_a⁻¹, sl_b⁻¹}
 
-def F_2 : Subgroup SL(3, ℝ) := Subgroup.closure {sl_a, sl_b}
+def Free_Rots : Subgroup SL(3, ℝ) := Subgroup.closure {sl_a, sl_b}
 
-def fin_2_to_F_2 (w : Fin 2 × Bool) : fin_generators :=
+def fin_2_to_rots (w : Fin 2) : Free_Rots :=
   match w with
-  | (1, true) => ⟨sl_a, by grind⟩
-  | (1, false) => ⟨sl_a⁻¹, by grind⟩
-  | (2, true) => ⟨sl_b, by grind⟩
-  | (2, false) => ⟨sl_b⁻¹, by grind⟩
+  | 1 => ⟨sl_a, by apply Subgroup.mem_closure_of_mem; simp⟩
+  | 2 => ⟨sl_b, by apply Subgroup.mem_closure_of_mem; simp⟩
 
-def F_2_to_fin_2 (g : fin_generators) : Fin 2 × Bool :=
-  if g = sl_a then (1, true) else
-  if g = sl_a⁻¹ then (1, false) else
-  if g = sl_b then (2, true) else (2, false)
+def test := FreeGroup.lift fin_2_to_rots
+
+
+#check test
+
+
+--- v schlecht ^ gut
+
+@[simp]
+def fin_2_to_Rots (w : Fin 2 × Bool) : SL(3, ℝ) :=
+  match w with
+  | (1, true) => sl_a
+  | (1, false) => sl_a⁻¹
+  | (2, true) => sl_b
+  | (2, false) => sl_b⁻¹
+
+
+def Rots_to_fin_2 (g : SL(3, ℝ)) : Fin 2 × Bool :=
+  if g = sl_a then (1, true)
+  else if g = sl_a⁻¹ then (1, false)
+  else if g = sl_b then (2, true)
+  else (2, false)  -- g = sl_b⁻¹
+
+theorem reduce_append_prod (l1 l2 : List (Fin 2 × Bool)) :
+    ((FreeGroup.reduce (l1 ++ l2)).map fin_2_to_Rots).prod = ((FreeGroup.reduce l1).map fin_2_to_Rots).prod * ((FreeGroup.reduce l2).map fin_2_to_Rots).prod := by
+  rw [← List.prod_append, ← List.map_append]
+  induction l2 with
+  | nil => simp
+  | cons head tail ih =>
+     5
+
+
+
+theorem reduce_prod (l : List (Fin 2 × Bool)) :
+    ((FreeGroup.reduce l).map fin_2_to_Rots).prod = (l.map fin_2_to_Rots).prod := by
+  induction l using List.twoStepInduction with
+  | nil => simp
+  | singleton x => simp
+  | cons_cons x y tail h1 h2 =>
+
+
+
+
+
+
+
+
+
+
+
+#exit
 
 lemma f_2_representable : ∀ g ∈ F_2,
-    ∃ l : List fin_generators, (l : List SL(3, ℝ)).prod = g ∧ FreeGroup.reduce (l.map F_2_to_fin_2) = l.map F_2_to_fin_2 := by
+    ∃ l : List fin_generators, (l : List SL(3, ℝ)).prod = g ∧ FreeGroup.IsReduced (l.map F_2_to_fin_2) := by
   apply Subgroup.closure_induction
   . simp only [Set.mem_insert_iff, Set.mem_singleton_iff, List.pure_def, List.bind_eq_flatMap,
     forall_eq_or_imp, forall_eq]
@@ -91,13 +148,20 @@ lemma f_2_representable : ∀ g ∈ F_2,
       simp
     . use [⟨sl_b, by simp⟩]
       simp
-  . use [⟨sl_a, by simp⟩, ⟨sl_a⁻¹, by simp⟩]
+  . use []
     simp
-  . simp only [List.pure_def, List.bind_eq_flatMap, forall_exists_index]
-    intro x y hx hy l1 h1 l2 h2
-    use l1 ++ l2
-    simp at h1 h2
-    simp [h1,h2]
+  . simp only [fin_generators, List.pure_def, List.bind_eq_flatMap, forall_exists_index, and_imp]
+    intro x y hx hy l1 hl1 hrl1 l2 hl2 hrl2
+    use (FreeGroup.reduce ((l1 ++ l2).map F_2_to_fin_2)).map fin_2_to_F_2
+    apply And.intro
+    .
+      rw [← hl1, ← hl2, ← List.prod_append, ←  List.flatMap_append]
+      rw [← reduce_prod]
+
+
+
+
+    . sorry
   . simp only [fin_generators, List.pure_def, List.bind_eq_flatMap, List.map_id_fun', id_eq,
     forall_exists_index]
     intro g hg l h1
