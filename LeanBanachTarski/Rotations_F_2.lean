@@ -3,6 +3,8 @@ import Mathlib.Tactic.Rify
 
 open Matrix FreeGroup
 
+
+
 theorem inj : Function.Injective F_2_to_Rots := by
   rw [← MonoidHom.ker_eq_bot_iff]
   ext w
@@ -35,10 +37,35 @@ theorem inj : Function.Injective F_2_to_Rots := by
         simp at h
         rify
         exact h.symm
-      clear h1 h
-      subst hb
-      sorry
+      obtain ⟨ha, -,hc⟩ := h1
+      subst ha hb hc
+      clear h
+      simp at h1''
+
+      --- blöd, wie schließt man aus, dass tail = [head.inv]
+      --- todo rausfinden, wie a, b, c aussieht, wenn man w invertiert (TODO konkrete Formel für invertierung von SL(3,R) Matrizen)
+      induction hw: w using FreeGroup.induction_on with
+
+      | C1 => grind
+      | of x => sorry
+      | inv_of x _ => sorry
+      | mul x y h1 h2 =>
+        rw [hw] at h1''
+        simp at h1''
+        --- todo sagen, dass x != y.inv
+        sorry
+
+
+
+
+
+
+
+
+
     | inr h => simp_all
+
+
   simp_all
 
 #exit
