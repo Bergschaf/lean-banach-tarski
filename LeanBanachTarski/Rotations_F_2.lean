@@ -1,9 +1,26 @@
 import LeanBanachTarski.Definitions
 import Mathlib.Tactic.Rify
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib
+open Matrix FreeGroup MatrixGroups
 
-open Matrix FreeGroup
 
+theorem SL3_inv_expl_det (A : SL(3, ℝ)) :
+    det !![A.1 1 1 * A.1 2 2 - A.1 1 2 * A.1 2 1, -(A.1 0 1 * A.1 2 2) + A.1 0 2 * A.1 2 1, A.1 0 1 * A.1 1 2 - A.1 0 2 * A.1 1 1;
+    -(A.1 1 0 * A.1 2 2) + A.1 1 2 * A.1 2 0, A.1 0 0 * A.1 2 2 - A.1 0 2 * A.1 2 0, -(A.1 0 0 * A.1 1 2) + A.1 0 2 * A.1 1 0;
+    A.1 1 0 * A.1 2 1 - A.1 1 1 * A.1 2 0, -(A.1 0 0 * A.1 2 1) + A.1 0 1 * A.1 2 0, A.1 0 0 * A.1 1 1 - A.1 0 1 * A.1 1 0] = 1 := by
+  simp [Matrix.det_fin_three]
+  have test := A.prop
+  rw [Matrix.det_fin_three] at test
+  grind only
 
+theorem SL3_inv_expl (A : SL(3, ℝ)) :
+    A⁻¹ = ⟨!![A.1 1 1 * A.1 2 2 - A.1 1 2 * A.1 2 1, -(A.1 0 1 * A.1 2 2) + A.1 0 2 * A.1 2 1, A.1 0 1 * A.1 1 2 - A.1 0 2 * A.1 1 1;
+    -(A.1 1 0 * A.1 2 2) + A.1 1 2 * A.1 2 0, A.1 0 0 * A.1 2 2 - A.1 0 2 * A.1 2 0, -(A.1 0 0 * A.1 1 2) + A.1 0 2 * A.1 1 0;
+    A.1 1 0 * A.1 2 1 - A.1 1 1 * A.1 2 0, -(A.1 0 0 * A.1 2 1) + A.1 0 1 * A.1 2 0, A.1 0 0 * A.1 1 1 - A.1 0 1 * A.1 1 0], SL3_inv_expl_det A⟩ := by
+  ext
+  have := Matrix.adjugate_fin_three A.1
+  simp_all only [Fin.isValue, SpecialLinearGroup.coe_inv, of_apply, cons_val', cons_val_fin_one]
 
 theorem inj : Function.Injective F_2_to_Rots := by
   rw [← MonoidHom.ker_eq_bot_iff]
