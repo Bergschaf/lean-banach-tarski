@@ -27,38 +27,102 @@ theorem inj : Function.Injective F_2_to_Rots := by
   ext w
   simp [MonoidHom.ker, F_2_to_Rots]
   apply Iff.intro
-  . intro h
-    obtain ⟨a,b,c,h1⟩ := Free_Rots_mul_vec w
-    by_contra hc
-    -- irgendwas mit a = c = 0 oder b = 1 genau dann wenn w = 0 (weil length dann 0)
-    have h_len : w.toWord.length > 0 := by
-      contrapose h
-      simp_all only [Nat.succ_eq_add_one, Nat.reduceAdd, one_div, smul_cons, smul_eq_mul,
-        smul_empty, gt_iff_lt, not_lt, nonpos_iff_eq_zero, List.length_eq_zero_iff,
-        toWord_eq_nil_iff, not_true_eq_false, not_false_eq_true]
-    have h1' := h1
-    have h1'' := h1
-    rw [h] at h1
-    simp at h1
-    simp [h1, h] at h1'
-    cases h1' with
-    | inl h =>
-      have hb : b = 3^ w.toWord.length := by
-        apply_fun ((3 ^ w.toWord.length) * .) at h
-        simp at h
-        simp_all only [gt_iff_lt, Nat.succ_eq_add_one, Nat.reduceAdd, OneMemClass.coe_one,
-          SpecialLinearGroup.coe_one, one_mulVec, Int.cast_zero, zero_mul, smul_cons, smul_eq_mul,
-          mul_zero, smul_empty, vecCons_inj, mul_eq_mul_right_iff, Int.cast_eq_zero, and_true,
-          true_and]
-        apply_fun ((3 ^ w.toWord.length) * .) at h
-        simp at h
-        rify
-        exact h.symm
-      obtain ⟨ha, -,hc⟩ := h1
-      subst ha hb hc
-      clear h
-      simp at h1''
+  .
+    induction hn: FreeGroup.norm w generalizing w with
+    | zero =>
+      sorry
+    | succ   n ih =>
+      intro h
 
+
+      have split_w : w = mk [w.toWord.head sorry] * mk w.toWord.tail := by sorry
+      have h2 : (mk w.toWord.tail).norm = n := by sorry
+      specialize ih (mk w.toWord.tail) h2
+
+      obtain ⟨a,b,c,h1⟩ := Free_Rots_mul_vec (mk w.toWord.tail)
+      have h_tail : (lift fin_2_to_rots) (mk w.toWord.tail) = 1 -> false := by
+        rw [split_w, _root_.map_mul] at h
+        rw [← h]
+        intro hC
+        apply_fun (. * ((lift fin_2_to_rots) (mk w.toWord.tail))⁻¹) at hC
+        rw [mul_inv_cancel, mul_assoc, mul_inv_cancel] at hC
+        simp [fin_2_to_rots] at hC
+        sorry -- stimmt
+      obtain ⟨a',b',c',hrot⟩ := Free_Rots_mul_vec w
+      have hrot1 := hrot
+      have hrot2 := hrot
+      rw[h] at hrot2
+      simp at hrot2
+      obtain ⟨ha, hb, hc⟩ := hrot2
+      apply_fun ((3 ^ w.toWord.length) * ·) at hb
+      simp at hb
+      simp [ha, ← hb, hc] at hrot
+      rw [split_w, _root_.map_mul] at hrot
+      simp [-lift_mk,Subgroup.coe_mul, SpecialLinearGroup.coe_mul, ← mulVec_mulVec, h1] at hrot
+      cases h_case : (w.toWord.head sorry).2
+      . simp [fin_2_to_rots, h_case] at hrot
+        -- cases mit head.2
+        -- dann irgendwie zeigen, dass es nd geht??
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#exit
+
+      -- irgendwas mit a = c = 0 oder b = 1 genau dann wenn w = 0 (weil length dann 0)
+      have h_len : w.toWord.length > 0 := by sorry
+      have h1' := h1
+      have h1'' := h1
+      have h' : (lift fin_2_to_rots) (mk w.toWord.tail) = 1 := by sorry
+      rw [h'] at h1
+      simp at h1
+      simp [h1, h'] at h1'
+
+      cases h1' with
+      | inl h =>
+        have hb : b = 3^ w.toWord.tail.length := by sorry
+        /-
+          apply_fun ((3 ^ w.toWord.length) * .) at h
+          simp at h
+          simp_all only [gt_iff_lt, Nat.succ_eq_add_one, Nat.reduceAdd, OneMemClass.coe_one,
+            SpecialLinearGroup.coe_one, one_mulVec, Int.cast_zero, zero_mul, smul_cons, smul_eq_mul,
+            mul_zero, smul_empty, vecCons_inj, mul_eq_mul_right_iff, Int.cast_eq_zero, and_true,
+            true_and]
+          apply_fun ((3 ^ w.toWord.length) * .) at h
+          simp at h
+          rify
+          exact h.symm-/
+        obtain ⟨ha, -,hc⟩ := h1
+        subst ha hb hc
+        clear h
+        simp at h1''
+
+      | inr h =>
+        sorry
+
+
+        -- induktion über die länge von w.toWord => FreeGroup.norm
+
+#exit
       --- blöd, wie schließt man aus, dass tail = [head.inv]
       --- todo rausfinden, wie a, b, c aussieht, wenn man w invertiert (TODO konkrete Formel für invertierung von SL(3,R) Matrizen)
       induction hw: w using FreeGroup.induction_on with
