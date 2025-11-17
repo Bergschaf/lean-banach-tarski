@@ -24,9 +24,12 @@ theorem SL3_inv_expl (A : SL(3, ℝ)) :
 
 theorem inj : Function.Injective F_2_to_Rots := by
   rw [← MonoidHom.ker_eq_bot_iff]
+
   ext w
+
   simp [MonoidHom.ker, F_2_to_Rots]
-  apply Iff.intro
+  sorry
+/-  apply Iff.intro
   .
     induction hn: FreeGroup.norm w generalizing w with
     | zero =>
@@ -63,30 +66,6 @@ theorem inj : Function.Injective F_2_to_Rots := by
       . simp [fin_2_to_rots, h_case] at hrot
         -- cases mit head.2
         -- dann irgendwie zeigen, dass es nd geht??
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#exit
 
       -- irgendwas mit a = c = 0 oder b = 1 genau dann wenn w = 0 (weil length dann 0)
       have h_len : w.toWord.length > 0 := by sorry
@@ -149,7 +128,7 @@ theorem inj : Function.Injective F_2_to_Rots := by
 
   simp_all
 
-#exit
+#exit-/
 theorem exists_inv_fun : ∀ g ∈ Free_Rots, ∃ w : FreeGroup (Fin 2), F_2_to_Rots w = g := by
   apply Subgroup.closure_induction
   . simp [F_2_to_Rots]
@@ -174,7 +153,7 @@ theorem exists_inv_fun : ∀ g ∈ Free_Rots, ∃ w : FreeGroup (Fin 2), F_2_to_
 #check F_2_to_Rots
 
 open FreeGroup
-def equiv :   FreeGroup (Fin 2) ≃* ↥Free_Rots where
+noncomputable def equiv :  FreeGroup (Fin 2) ≃* ↥Free_Rots where
   toFun := F_2_to_Rots
   invFun g := (exists_inv_fun g.val g.prop).choose
   map_mul' := by simp
@@ -191,8 +170,8 @@ def equiv :   FreeGroup (Fin 2) ≃* ↥Free_Rots where
     have spec := (exists_inv_fun g h).choose_spec
     grind
 
-
-def basis : FreeGroupBasis (Fin 2) ↥Free_Rots where
+#check equiv
+noncomputable def basis : FreeGroupBasis (Fin 2) ↥Free_Rots where
   repr := equiv.symm
 
 instance : IsFreeGroup ↥Free_Rots where
@@ -200,5 +179,9 @@ instance : IsFreeGroup ↥Free_Rots where
     use (Fin 2)
     refine Nonempty.intro basis
 
+
+noncomputable def Free_Free_Rots := (IsFreeGroup.toFreeGroup Free_Rots)
+
+#check Free_Free_Rots
 
 abbrev ℝ_3 := Fin 3 -> ℝ
